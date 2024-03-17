@@ -1,10 +1,44 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{6D9AC715-32E9-49DF-AEEF-0B466E832C61}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{976DB19C-3B2F-4FA1-A95B-C182AC8F2B28}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoofPass.Server.Core", "GoofPass.Server.Core\GoofPass.Server.Core.csproj", "{B48D617D-EA03-42E5-BABD-97AD65BAB4B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoofPass.Server.WebAPI", "GoofPass.Server.WebAPI\GoofPass.Server.WebAPI.csproj", "{00FF94C8-7C29-4574-9F54-A672E0F033C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoofPass.Server.Infrastructure", "GoofPass.Server.Infrastructure\GoofPass.Server.Infrastructure.csproj", "{702B0598-E65A-4C3B-BD21-84C51D2594B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoofPass.Server.Domain", "GoofPass.Server.Domain\GoofPass.Server.Domain.csproj", "{37C3825C-52CC-44DA-B5DA-F9C2262AF763}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B48D617D-EA03-42E5-BABD-97AD65BAB4B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B48D617D-EA03-42E5-BABD-97AD65BAB4B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B48D617D-EA03-42E5-BABD-97AD65BAB4B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B48D617D-EA03-42E5-BABD-97AD65BAB4B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00FF94C8-7C29-4574-9F54-A672E0F033C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00FF94C8-7C29-4574-9F54-A672E0F033C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00FF94C8-7C29-4574-9F54-A672E0F033C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00FF94C8-7C29-4574-9F54-A672E0F033C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{702B0598-E65A-4C3B-BD21-84C51D2594B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{702B0598-E65A-4C3B-BD21-84C51D2594B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{702B0598-E65A-4C3B-BD21-84C51D2594B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{702B0598-E65A-4C3B-BD21-84C51D2594B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37C3825C-52CC-44DA-B5DA-F9C2262AF763}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37C3825C-52CC-44DA-B5DA-F9C2262AF763}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37C3825C-52CC-44DA-B5DA-F9C2262AF763}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37C3825C-52CC-44DA-B5DA-F9C2262AF763}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B48D617D-EA03-42E5-BABD-97AD65BAB4B7} = {6D9AC715-32E9-49DF-AEEF-0B466E832C61}
+		{00FF94C8-7C29-4574-9F54-A672E0F033C9} = {6D9AC715-32E9-49DF-AEEF-0B466E832C61}
+		{702B0598-E65A-4C3B-BD21-84C51D2594B5} = {6D9AC715-32E9-49DF-AEEF-0B466E832C61}
+		{37C3825C-52CC-44DA-B5DA-F9C2262AF763} = {6D9AC715-32E9-49DF-AEEF-0B466E832C61}
 	EndGlobalSection
 EndGlobal

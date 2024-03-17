@@ -1,0 +1,27 @@
+version: '3.4'
+
+services:
+  goofpass-client:
+    container_name: goofpass-client
+    image: ${DOCKER_REGISTRY-}goofpass-client
+    volumes:
+      - ./:/angular-app
+    environment:
+      - STYLE=css
+    ports:
+      - "4200:80"
+    build:
+      context: .
+      dockerfile: GoofPass.Client/Dockerfile
+      
+  goofpass-server:
+    container_name: goofpass-server
+    image: ${DOCKER_REGISTRY-}goofpass-server
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - "5266:80"
+    build:
+      context: .
+      dockerfile: GoofPass.Server.WebAPI/Dockerfile

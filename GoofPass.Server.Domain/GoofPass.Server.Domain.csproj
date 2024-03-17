@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\GoofPass.Server.Core\GoofPass.Server.Core.csproj" />
+      <ProjectReference Include="..\GoofPass.Server.Infrastructure\GoofPass.Server.Infrastructure.csproj" />
+    </ItemGroup>
+
+</Project>
