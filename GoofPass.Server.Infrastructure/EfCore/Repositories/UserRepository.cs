@@ -1,11 +1,12 @@
 ﻿using GoofPass.Server.Core.Models;
 using GoofPass.Server.Core.Repositories;
+using GoofPass.Server.Core.Services;
 using GoofPass.Server.Infrastructure.EfCore.Contexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace GoofPass.Server.Infrastructure.EfCore.Repositories;
 
-public class UserRepository : IRepository<User>
+public class UserRepository : IUserRepository
 {
     private readonly UserContext _ctx;
 
@@ -16,8 +17,8 @@ public class UserRepository : IRepository<User>
 
     public User Add(User entity)
     {
-        if (_ctx.Users.FirstOrDefault(user => user.Username.Equals(entity.Username)) != null)
-            throw new InvalidOperationException(nameof(entity.Username));
+        if (_ctx.Users.FirstOrDefault(user => user.Email.Equals(entity.Email)) != null)
+            throw new InvalidOperationException(nameof(entity.Email));
         
         entity.Id = Guid.NewGuid();
         
@@ -50,4 +51,10 @@ public class UserRepository : IRepository<User>
         _ctx.SaveChanges();
         return userRemove;
     }
+    
+    public User GetByEmail(string email)
+    {
+        return _ctx.Users.FirstOrDefault(user => user.Email.Equals(email));
+    }
+    
 }

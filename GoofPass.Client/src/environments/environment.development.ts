@@ -1,6 +1,7 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:5266/api/',
-  iterations: 100000,
-  keyLength: 64
+  iterAuth: 100001,
+  iterPw: 100000,
+  keyLength: 512
 };

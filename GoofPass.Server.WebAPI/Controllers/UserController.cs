@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
+using System.Text.Unicode;
 using System.Threading.Tasks;
 using GoofPass.Server.Core.Models;
 using GoofPass.Server.Core.Services;
@@ -37,6 +39,19 @@ public class UserController : ControllerBase
         }
     }
     
+    [HttpGet]
+    public IActionResult GetAll()
+    {
+        try
+        {
+            return Ok(_userService.GetAll());
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e);
+        }
+    }
+    
     [HttpPost("Test")]
     public IActionResult Test([FromBody] UserDto userDto)
     {
@@ -45,12 +60,11 @@ public class UserController : ControllerBase
             // convert dto to model
             var user = new User
             {
-                Username = userDto.Username
+                Email = userDto.Email
             };
 
-            user.Password = RandomNumberGenerator.GetBytes(8);
-            user.Salt = RandomNumberGenerator.GetBytes(8);
-            user.IV = RandomNumberGenerator.GetBytes(8);
+            user.Password = BitConverter.ToString(RandomNumberGenerator.GetBytes(64)).Replace("-", "");
+            user.Salt = BitConverter.ToString(RandomNumberGenerator.GetBytes(12)).Replace("-", "");
             
             var newUser = _userService.Add(user);
             
@@ -63,32 +77,69 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("Register")]
-    public IActionResult Register([FromBody] User user)
+    public IActionResult Register([FromBody] AuthUserDto userDto)
     {
         try
         {
-            var newUser = _userService.Add(user);
+            var user = new User
+            {
+                Email = userDto.Email,
+                Password = userDto.Password,
+                Salt = userDto.Salt
+            };
             
-            return Ok(newUser);
+            _userService.Register(user);
+            
+            return Ok();
         }
         catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+    
+    [HttpPost("Login")]
+    public ActionResult<UserDto> Login([FromBody] LoginUserDto authUserDto)
+    {
+        try
+        {
+
+            var user = new User
+            {
+                Email = authUserDto.Email,
+                Password = authUserDto.Password
+            };
+            
+            var newUser = _userService.Login(user);
+            //
+            // var userDto = new JWTokenDto
+            // {
+            //     Id = newUser.Id,
+            //     Email = newUser.Email,
+            //     Token = newUser.Token
+            // };
+            //
+            
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+    
+    [HttpPost("Salt")]
+    public ActionResult<string> Prepare([FromBody] UserBareDto user)
+    {
+        try
+        {
+            var salt = _userService.GetSalt(user.Email);
+                
+            return Ok(salt);
+        } catch (Exception e)
         {
             return BadRequest(e);
         }
     }
     
-    [HttpPost("Login")]
-    public ActionResult<JWToken> Login([FromBody] User user)
-    {
-        try
-        {
-            var newUser = _userService.Login(user);
-            
-            return Ok(newUser);
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e);
-        }
-    }
 }

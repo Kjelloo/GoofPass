@@ -1,6 +1,4 @@
 ﻿using System.Security.Cryptography;
-using GoofPass.Server.Core.Models;
-using GoofPass.Server.Core.Repositories;
 using GoofPass.Server.Core.Services;
 using GoofPass.Server.Domain.Helpers;
 using GoofPass.Server.Domain.Services;
@@ -15,18 +13,19 @@ var builder = WebApplication.CreateBuilder(args);
 var secret = RandomNumberGenerator.GetBytes(16); // Todo: store in a secure location
 
 // Add services to the container.
-builder.Services.AddDbContext<UserContext>(opt => opt.UseInMemoryDatabase("UserDB"));
-builder.Services.AddDbContext<PasswordContext>(opt => opt.UseInMemoryDatabase("PasswordDB"));
+builder.Services.AddDbContext<UserContext>(opt => opt.UseSqlite("Data Source=UserDB.db"));
+builder.Services.AddDbContext<PasswordContext>(opt => opt.UseSqlite("Data Source=PasswordDB.db"));
 builder.Services.AddTransient<IDbInitializer<UserContext>, UserDbInitializer>();
 builder.Services.AddTransient<IDbInitializer<PasswordContext>, PasswordEntryDbInitializer>();
 
-builder.Services.AddScoped<IRepository<User>, UserRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddSingleton<IAuthService>(sp => new JWTService(secret));
+builder.Services.AddSingleton<IAuthService>(sp => new AuthService(secret));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(opt =>
@@ -62,6 +61,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseCors("dev-cors");
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var userContext = services.GetService<UserContext>();
+    var passwordContext = services.GetService<PasswordContext>();
+    
+    var userDbInitializer = services.GetService<IDbInitializer<UserContext>>();
+    var passwordDbInitializer = services.GetService<IDbInitializer<PasswordContext>>();
+    userDbInitializer.Initialize(userContext);
+    passwordDbInitializer.Initialize(passwordContext);
 }
 
 app.UseAuthorization();

@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using GoofPass.Server.Core.Models;
 using GoofPass.Server.Core.Repositories;
 using GoofPass.Server.Core.Services;
@@ -8,20 +9,18 @@ namespace GoofPass.Server.Domain.Services;
 
 public class UserService : IUserService
 {
-    private readonly IRepository<User> _userRep;
-    private readonly IAuthService _jwtService;
+    private readonly IUserRepository _userRep;
     private readonly IAuthService _authService;
 
-    public UserService(IRepository<User> userRep, IAuthService jwtService, IAuthService authService)
+    public UserService(IUserRepository userRep, IAuthService authService)
     {
         _userRep = userRep;
-        _jwtService = jwtService;
         _authService = authService;
     }
 
     public User Add(User entity)
     {
-        if (entity.Salt.IsNullOrEmpty() || entity.Password.IsNullOrEmpty() || entity.IV.IsNullOrEmpty())
+        if (entity.Salt.IsNullOrEmpty() || entity.Password.IsNullOrEmpty())
             throw new InvalidOperationException(nameof(entity));
         
         return _userRep.Add(entity);
@@ -49,20 +48,19 @@ public class UserService : IUserService
     
     public JWToken Login(User user)
     {
-        var userDb = _userRep.Get(user.Id);
+        var userDb = _userRep.GetByEmail(user.Email);
         
         if (userDb == null)
             throw new InvalidOperationException("Invalid login");
         
-        if (_authService.VerifyHash(user.Password, userDb.Password))
+        if (!userDb.Password.Equals(user.Password))
             throw new InvalidOperationException("Invalid login");
-        
-        userDb.Password = Array.Empty<byte>(); // clear password
         
         var token = new JWToken
         {
-            Token = _jwtService.GenerateToken(user),
-            User = userDb
+            Token = _authService.GenerateToken(user),
+            Email = user.Email,
+            Id = user.Id.ToString()
         };
         
         return token;
@@ -70,6 +68,24 @@ public class UserService : IUserService
 
     public User Register(User user)
     {
-        throw new NotImplementedException();
+        if (user.Salt.IsNullOrEmpty() || user.Password.IsNullOrEmpty() || user.Email.IsNullOrEmpty())
+            throw new InvalidOperationException("Invalid registration");
+
+        if (_userRep.GetByEmail(user.Email) != null)
+            throw new InvalidOperationException("Email already exists");
+
+        user.Id = Guid.NewGuid();
+        
+        return _userRep.Add(user);
+    }
+
+    public string GetSalt(string user)
+    {
+        var userDb = _userRep.GetByEmail(user);
+        
+        if (userDb == null)
+            throw new InvalidOperationException("Invalid user");
+        
+        return userDb.Salt;
     }
 }

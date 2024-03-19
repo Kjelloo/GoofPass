@@ -2,6 +2,7 @@
 
 public class JWToken
 {
+    public string Id { get; set; }
+    public string Email { get; set; }
     public string Token { get; set; }
-    public User User { get; set; }
 }
