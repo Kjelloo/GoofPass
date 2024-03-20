@@ -3,6 +3,7 @@ import {AuthUserDto} from "./dtos/authuser.dto";
 import {environment} from "../../environments/environment.development";
 import CryptoJS from 'crypto-js';
 import {RegisterUserDto} from "./dtos/RegisterUserDto";
+import {PasswordentryEncryptedDto} from "./dtos/passwordentryencrypted.dto";
 
 function base64ToUint32Array(base64: string) {
   // Decode Base64 to binary string
@@ -44,111 +45,43 @@ export class SecurityService {
     };
   }
 
-  async createKey(password: string, salt: string): Promise<string> {
+  async createKey(password: string, salt: string, iter: number): Promise<string> {
     console.log(salt);
     let slt = CryptoJS.enc.Base64.parse(salt);
     let key = CryptoJS.PBKDF2(password, slt,
-      { keySize: keyLength / 32, iterations: iterations});
+      { keySize: keyLength / 32, iterations: iter});
 
     console.log(CryptoJS.enc.Base64.stringify(key));
 
     return CryptoJS.enc.Base64.stringify(key);
   }
 
-    // import key from password
-    // const key = await crypto.subtle.importKey(
-    //   "raw",
-    //   enc.encode(authUserDto.password),
-    //   {name: "PBKDF2"},
-    //   true,
-    //   ["deriveBits", "deriveKey", "wrapKey", "unwrapKey"]
-    // );
-    //
-    // // derive key from imported key
-    // return new Promise(async (resolve, reject) => {
-    //
-    //   try {
-    //     //
-    //     const derivedKey = await crypto.subtle.deriveKey(
-    //       {
-    //         name: "PBKDF2",
-    //         salt: salt,
-    //         iterations: iterations,
-    //         hash: "SHA-512"
-    //       },
-    //       key,
-    //       {name: "AES-CBC", length: keyLength},
-    //       true,
-    //       ["encrypt", "decrypt", "wrapKey", "unwrapKey"]
-    //     );
-    //     let pass;
-    //
-    //     crypto.subtle.wrapKey("raw", derivedKey, key, "AES-CBC").then((wrappedKey) => {
-    //       pass = wrappedKey;
-    //     });
-    //
-    //     const user: User = {
-    //       id: undefined,
-    //       email: authUserDto.email,
-    //       password: pass,
-    //       salt: salt,
-    //       iv: iv,
-    //       token: undefined
-    //     };
-    //
-    //     resolve(user);
-    //   } catch (err) {
-    //     reject(err);
-    //   }
-    // });
+  async encrypt(data: string, key: string): Promise<PasswordentryEncryptedDto> {
+    let iv = CryptoJS.lib.WordArray.random(12);
+    let salt = CryptoJS.lib.WordArray.random(16);
 
+    let encrypted = CryptoJS.AES.encrypt(data, key, {iv: iv, salt: salt, length: environment.keyLength});
 
-    //   crypto.pbkdf2(authUserDto.password, salt, iterations, keyLength, 'sha512', (err: any, derivedKey: any) => {
-    //     if (err) {
-    //       reject(err);
-    //     } else {
-    //
-    //       const user: User = {
-    //         id: undefined,
-    //         email: authUserDto.email,
-    //         password: derivedKey,
-    //         salt: salt,
-    //         iv: iv,
-    //         token: undefined
-    //       };
-    //
-    //       resolve(user);
-    //     }
-    //   });
-    // });
-  // }
+    return {
+      id: undefined,
+      userid: '',
+      name: '',
+      salt: CryptoJS.enc.Base64.stringify(salt),
+      iv: CryptoJS.enc.Base64.stringify(iv),
+      password: CryptoJS.enc.Base64.stringify(encrypted.ciphertext)
+    };
+  }
 
-  // encryptPassword(passwordEntry: PasswordEntryDecryptedDto, key: Uint8Array): PasswordentryEncryptedDto {
-  //   const cipher = crypto.createCipheriv('aes-256-cbc', key, passwordEntry.iv);
-  //   let encryptedPassword = cipher.update(Buffer.concat([passwordEntry.salt, Buffer.from(passwordEntry.decryptedPassword)]));
-  //
-  //   encryptedPassword = Buffer.concat([encryptedPassword, cipher.final()]);
-  //
-  //   return {
-  //     id: undefined,
-  //     userid: passwordEntry.userid,
-  //     encryptedPassword: encryptedPassword,
-  //     salt: passwordEntry.salt,
-  //     iv: passwordEntry.iv
-  //   };
-  // }
-  // decryptPassword(passwordEntry: PasswordentryEncryptedDto, key: Buffer): PasswordEntryDecryptedDto {
-  //   const decipher = crypto.createDecipheriv('aes-256-cbc', key, passwordEntry.iv);
-  //   let decryptedPassword = decipher.update(Buffer.concat([passwordEntry.encryptedPassword]));
-  //
-  //   decryptedPassword = Buffer.concat([decryptedPassword, decipher.final()]);
-  //
-  //   return {
-  //     id: undefined,
-  //     userid: passwordEntry.userid,
-  //     decryptedPassword: decryptedPassword.toString().slice(16), // Remove salt
-  //     salt: passwordEntry.salt,
-  //     iv: passwordEntry.iv
-  //   };
-  // }
+  async decrypt(passwordEntry: PasswordentryEncryptedDto, key: string): Promise<string> {
+    let salt = CryptoJS.enc.Base64.parse(passwordEntry.salt);
+    let iv = CryptoJS.enc.Base64.parse(passwordEntry.iv);
+
+    let decrypted = CryptoJS.AES.decrypt(
+      passwordEntry.password,
+      key,
+      {iv: iv, salt: salt}
+    );
+
+    return CryptoJS.enc.Utf8.stringify(decrypted);
+  }
 }

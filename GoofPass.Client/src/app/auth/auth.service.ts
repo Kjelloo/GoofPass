@@ -31,6 +31,7 @@ export class AuthService {
   }
 
   authenticated() {
+    // todo: do proper check
     const user = JSON.parse(localStorage.getItem('user')!) as User;
     return user != undefined && user.token != undefined && user.token != '';
   }

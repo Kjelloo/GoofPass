@@ -27,7 +27,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public IActionResult Get(Guid id)
+    public IActionResult Get(string id)
     {
         try
         {
@@ -111,16 +111,16 @@ public class UserController : ControllerBase
             };
             
             var newUser = _userService.Login(user);
-            //
-            // var userDto = new JWTokenDto
-            // {
-            //     Id = newUser.Id,
-            //     Email = newUser.Email,
-            //     Token = newUser.Token
-            // };
-            //
             
-            return Ok();
+            var userDto = new JWTokenDto
+            {
+                Id = newUser.Id,
+                Email = newUser.Email,
+                Token = newUser.Token
+            };
+            
+            
+            return Ok(userDto);
         }
         catch (Exception e)
         {

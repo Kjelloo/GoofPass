@@ -31,7 +31,7 @@ public class UserService : IUserService
         return _userRep.GetAll();
     }
 
-    public User Get(Guid id)
+    public User Get(string id)
     {
         return _userRep.Get(id);
     }
@@ -60,7 +60,7 @@ public class UserService : IUserService
         {
             Token = _authService.GenerateToken(user),
             Email = user.Email,
-            Id = user.Id.ToString()
+            Id = userDb.Id.ToString()
         };
         
         return token;

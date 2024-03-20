@@ -24,7 +24,7 @@ public class AuthService : IAuthService
         var claims = new List<Claim>()
         {
             new(ClaimTypes.Email, user.Email),
-            new(type: "Salt", value: user.Salt)
+            new(ClaimTypes.Sid, user.Id.ToString())
         };
         
         var token = new JwtSecurityToken(
@@ -38,5 +38,22 @@ public class AuthService : IAuthService
                     DateTime.Now.AddDays(1))); // expires
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+    
+    public bool ValidateToken(string token)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = new SymmetricSecurityKey(_secret);
+        
+        tokenHandler.ValidateToken(token, new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = key
+        }, out SecurityToken validatedToken);
+        
+        return validatedToken != null;
     }
 }

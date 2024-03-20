@@ -1,7 +1,8 @@
 export interface PasswordentryEncryptedDto {
   id: string | undefined;
+  name: string;
   userid: string;
-  encryptedPassword: Uint8Array;
-  salt: Uint8Array;
-  iv: Uint8Array;
+  password: string;
+  salt: string;
+  iv: string;
 }

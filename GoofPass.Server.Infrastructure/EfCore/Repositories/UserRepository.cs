@@ -1,5 +1,4 @@
 ﻿using GoofPass.Server.Core.Models;
-using GoofPass.Server.Core.Repositories;
 using GoofPass.Server.Core.Services;
 using GoofPass.Server.Infrastructure.EfCore.Contexts;
 using Microsoft.EntityFrameworkCore;
@@ -32,9 +31,9 @@ public class UserRepository : IUserRepository
         return _ctx.Users;
     }
 
-    public User Get(Guid id)
+    public User Get(string id)
     {
-        return _ctx.Users.FirstOrDefault(user => user.Id.Equals(id)) ?? throw new InvalidOperationException();
+        return _ctx.Users.FirstOrDefault(user => user.Id.Equals(id));
     }
 
     public User Edit(User entity)

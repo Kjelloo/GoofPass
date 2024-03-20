@@ -5,6 +5,7 @@ import {AuthService} from "../auth.service";
 import {Router} from "@angular/router";
 import {NgIf} from "@angular/common";
 import {SecurityService} from "../../shared/security.service";
+import {environment} from "../../../environments/environment.development";
 
 @Component({
   selector: 'app-login',
@@ -42,7 +43,7 @@ export class LoginComponent {
       // Get salt first (not the best way to do this, but it's a quick fix for now)
       this.authService.getSalt({email: userLogin.email}).subscribe({
         next: (salt) => {
-          this.securityService.createKey(userLogin.password, salt)
+          this.securityService.createKey(userLogin.password, salt, environment.iterAuth)
             .then((key) => {
               userLogin.password = key;
               this.authService.login(userLogin).subscribe({
@@ -50,7 +51,10 @@ export class LoginComponent {
                   console.log(user);
                   if (user && user.token != undefined && user.token.length > 0){
                     localStorage.setItem('user', JSON.stringify(user));
-                    this.router.navigate(['/passwords']);
+                    this.securityService.createKey(userLogin.password, salt, environment.iterPw).then((masterKey) => {
+                      localStorage.setItem('key', masterKey);
+                      this.router.navigate(['password']);
+                    });
                   }
                 },
                 error: (error) => {
