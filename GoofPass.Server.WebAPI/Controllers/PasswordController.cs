@@ -47,6 +47,7 @@ namespace GoofPass.Server.WebAPI.Controllers
             }
         }
         
+        [Authorize]
         [HttpGet]
         public IActionResult Get()
         {
