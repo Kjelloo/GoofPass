@@ -1,8 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {PasswordentryEncryptedDto} from "../shared/dtos/passwordentryencrypted.dto";
+import {PasswordEntryDto} from "../shared/dtos/passwordEntryDto";
 import {Router} from "@angular/router";
-import {NgForOf, NgIf} from "@angular/common";
+import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
 import {PasswordCreateComponent} from "../password-create/password-create.component";
+import {PasswordService} from "../shared/password.service";
+import {User} from "../shared/dtos/user.dto";
+import {SecurityService} from "../shared/security.service";
 
 @Component({
   selector: 'app-password',
@@ -10,49 +13,53 @@ import {PasswordCreateComponent} from "../password-create/password-create.compon
   imports: [
     NgForOf,
     NgIf,
-    PasswordCreateComponent
+    PasswordCreateComponent,
+    AsyncPipe
   ],
   templateUrl: './password.component.html',
   styleUrl: './password.component.css'
 })
 export class PasswordComponent implements OnInit {
-  constructor(private router: Router) {
+  constructor(private router: Router, private passwordService: PasswordService, private securityService: SecurityService) {
   }
 
-  passwordEntries: PasswordentryEncryptedDto[] = [
-    {
-      name: 'Google',
-      password: 'encryptedPassword1',
-      id: undefined,
-      userid: '',
-      salt: '',
-      iv: ''
-    },
-    {
-      name: 'Facebook',
-      password: 'encryptedPassword2',
-      id: undefined,
-      userid: '',
-      salt: '',
-      iv: ''
-    }
-  ];
+  passwordEntries: PasswordEntryDto[] = [];
+  user: User = JSON.parse(localStorage.getItem('user')!) as User;
+  key: string = localStorage.getItem('key')!;
+
 
   ngOnInit(): void {
-
+    this.passwordService.getPasswords(this.user).subscribe({
+      next: (passwords) => {
+        this.passwordEntries = passwords;
+      },
+      error: (err) => {
+        console.error('Could not fetch passwords');
+      }
+    });
   }
 
-  addPassword(item: PasswordentryEncryptedDto) {
-    this.passwordEntries.push(item);
-  }
+  // addPassword(item: PasswordEntryDto) {
+  //   this.passwordEntries.push(item);
+  // }
 
   redirectToNewPage() {
     this.router.navigate(['password/create']); // Adjust the route according to your application
   }
 
-  revealPassword(entry: PasswordentryEncryptedDto) {
-    // Implement logic to reveal password
-    console.log(entry.password);
+  revealPassword(entry: PasswordEntryDto) {
+    this.securityService.decrypt(entry, this.key)
+      .then((decrypted) => {
+        entry.plain = decrypted;
+      })
+      .catch((err) => {
+        console.error('Could not decrypt password entry');
+      }
+    );
   }
 
+  logout() {
+    localStorage.clear();
+    this.router.navigate(['login']); // Adjust the route according to your application
+  }
 }

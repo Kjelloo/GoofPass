@@ -55,5 +55,4 @@ public class UserRepository : IUserRepository
     {
         return _ctx.Users.FirstOrDefault(user => user.Email.Equals(email));
     }
-    
 }

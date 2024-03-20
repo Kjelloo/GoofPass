@@ -2,10 +2,11 @@ import { Component } from '@angular/core';
 import {AuthUserDto} from "../../shared/dtos/authuser.dto";
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {AuthService} from "../auth.service";
-import {Router} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 import {NgIf} from "@angular/common";
 import {SecurityService} from "../../shared/security.service";
 import {environment} from "../../../environments/environment.development";
+import {of} from "rxjs";
 
 @Component({
   selector: 'app-login',
@@ -13,7 +14,8 @@ import {environment} from "../../../environments/environment.development";
   imports: [
     FormsModule,
     NgIf,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    RouterLink
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
@@ -31,14 +33,17 @@ export class LoginComponent {
         ]
       ),
       password: new FormControl(
-        '',
-        Validators.required
+        '',[
+          Validators.required,
+          Validators.minLength(8)
+        ]
       ),
     });
   }
 
   login() {
     if(this.loginForm.valid) {
+      localStorage.clear();
       let userLogin = this.loginForm.value as AuthUserDto;
       // Get salt first (not the best way to do this, but it's a quick fix for now)
       this.authService.getSalt({email: userLogin.email}).subscribe({
@@ -48,7 +53,6 @@ export class LoginComponent {
               userLogin.password = key;
               this.authService.login(userLogin).subscribe({
                 next: (user) => {
-                  console.log(user);
                   if (user && user.token != undefined && user.token.length > 0){
                     localStorage.setItem('user', JSON.stringify(user));
                     this.securityService.createKey(userLogin.password, salt, environment.iterPw).then((masterKey) => {
@@ -58,13 +62,13 @@ export class LoginComponent {
                   }
                 },
                 error: (error) => {
-                  console.error(error);
+                  console.error('Could not login');
                 }
               });
             });
         },
         error: (error) => {
-          console.error(error);
+          console.error('Could not login');
         }
       });
     }

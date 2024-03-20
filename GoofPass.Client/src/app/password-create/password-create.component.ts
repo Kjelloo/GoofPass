@@ -1,5 +1,5 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
-import {PasswordentryEncryptedDto} from "../shared/dtos/passwordentryencrypted.dto";
+import {PasswordEntryDto} from "../shared/dtos/passwordEntryDto";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {SecurityService} from "../shared/security.service";
 import {PasswordService} from "../shared/password.service";
@@ -18,9 +18,10 @@ import {User} from "../shared/dtos/user.dto";
 })
 export class PasswordCreateComponent implements OnInit {
   @Output() passwordCreated =
-    new EventEmitter<PasswordentryEncryptedDto>();
+    new EventEmitter<PasswordEntryDto>();
 
   passwordForm: FormGroup;
+  generatedPassword: string = '';
 
   constructor(private securityService: SecurityService, private passwordService: PasswordService,
               private router: Router) {
@@ -56,9 +57,10 @@ export class PasswordCreateComponent implements OnInit {
         return;
       }
 
-      let passwordEntry: PasswordentryEncryptedDto = {
+      let passwordEntry: PasswordEntryDto = {
         name: passwordEntryForm.name,
         password: '',
+        plain: '',
         id: '',
         userid: user.id!,
         salt: '',
@@ -79,13 +81,22 @@ export class PasswordCreateComponent implements OnInit {
               }
             },
             error: (error) => {
-              console.error(error);
+              console.error('Could not create password entry');
             }
           });
         })
         .catch(err => {
-          console.error(err);
+          console.error('Could not create password entry');
         });
     }
+  }
+
+  logout() {
+    localStorage.clear();
+    this.router.navigate(['login']); // Adjust the route according to your application
+  }
+
+  generatePassword() {
+    this.generatedPassword = this.securityService.generatePassword();
   }
 }

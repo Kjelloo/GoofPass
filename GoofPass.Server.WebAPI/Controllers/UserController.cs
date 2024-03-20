@@ -1,16 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Text.Json;
-using System.Text.Unicode;
-using System.Threading.Tasks;
 using GoofPass.Server.Core.Models;
 using GoofPass.Server.Core.Services;
-using GoofPass.Server.Domain.Services;
 using GoofPass.Server.WebAPI.Dtos;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GoofPass.Server.WebAPI.Controllers;
@@ -20,10 +11,12 @@ namespace GoofPass.Server.WebAPI.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IAuthService _authService;
 
-    public UserController(IUserService userService)
+    public UserController(IUserService userService, IAuthService authService)
     {
         _userService = userService;
+        _authService = authService;
     }
 
     [HttpGet("{id}")]
@@ -142,4 +135,17 @@ public class UserController : ControllerBase
         }
     }
     
+    [HttpPost("ValidateToken/{token}")]
+    public ActionResult<bool> ValidateToken(string token)
+    {
+        try
+        {
+            var validated = _authService.ValidateToken(token);
+            
+            return Ok(validated);
+        } catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
 }

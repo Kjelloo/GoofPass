@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
-import {NgIf} from "@angular/common";
+import {AsyncPipe, NgIf} from "@angular/common";
 import {AuthService} from "../auth.service";
-import {Router} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 import {AuthUserDto} from "../../shared/dtos/authuser.dto";
 import {SecurityService} from "../../shared/security.service";
 
@@ -12,7 +12,9 @@ import {SecurityService} from "../../shared/security.service";
     imports: [
         FormsModule,
         NgIf,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        RouterLink,
+        AsyncPipe
     ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
@@ -30,8 +32,10 @@ export class RegisterComponent implements OnInit {
         ]
       ),
       password: new FormControl(
-        '',
-        Validators.required,
+        '',[
+          Validators.required,
+          Validators.minLength(8)
+        ]
       ),
     });
   }
@@ -43,17 +47,17 @@ export class RegisterComponent implements OnInit {
   register() {
     if(this.registerForm.valid) {
       let userLogin = this.registerForm.value as AuthUserDto;
+      localStorage.clear();
 
       let user = this.securityService.createUser(userLogin);
 
       user.then((user) => {
-        console.log(user.password);
         this.authService.register(user).subscribe({
           next: (user) => {
             this.router.navigate(['/login']);
           },
           error: (error) => {
-            console.error(error);
+            console.error('Could not register');
           }
         });
       });
@@ -62,4 +66,5 @@ export class RegisterComponent implements OnInit {
 
   get email() {return this.registerForm.get('email')}
   get password() {return this.registerForm.get('password')}
+
 }

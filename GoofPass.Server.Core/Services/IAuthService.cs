@@ -5,4 +5,5 @@ namespace GoofPass.Server.Core.Services;
 public interface IAuthService
 {
     string GenerateToken(User user);
+    bool ValidateToken(string token);
 }

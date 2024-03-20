@@ -34,7 +34,7 @@ namespace GoofPass.Server.WebAPI.Controllers
         
         [Authorize]
         [HttpGet("User/{userId}")]
-        public IActionResult Get([FromBody] string userId)
+        public IActionResult Get(string userId)
         {
             try
             {
