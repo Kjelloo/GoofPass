@@ -65,7 +65,7 @@ builder.Services.AddCors(opt =>
         builder
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .WithOrigins("http://localhost:4200");
+            .WithOrigins("http://localhost:4200", "https://localhost:4200");
     });
 });
 
@@ -104,6 +104,8 @@ using (var scope = app.Services.CreateScope())
     userDbInitializer.Initialize(userContext);
     passwordDbInitializer.Initialize(passwordContext);
 }
+
+app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

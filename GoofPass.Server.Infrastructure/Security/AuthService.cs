@@ -35,7 +35,7 @@ public class AuthService : IAuthService
                     null, // Todo: validate audience
                     claims.ToArray(),
                     DateTime.Now, // notBefore
-                    DateTime.Now.AddDays(1))); // expires
+                    DateTime.Now.AddMinutes(10))); // expires
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
