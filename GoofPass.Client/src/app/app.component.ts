@@ -1,5 +1,5 @@
 import {Component, inject} from '@angular/core';
-import {CanActivateFn, Router, RouterOutlet} from '@angular/router';
+import {CanActivateFn, RouterOutlet} from '@angular/router';
 import {PasswordComponent} from "./password/password.component";
 import {AsyncPipe, NgIf} from "@angular/common";
 import {AuthService} from "./auth/auth.service";
@@ -14,9 +14,10 @@ import {map} from "rxjs";
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent{
+export class AppComponent {
 
-  constructor() {}
+  constructor() {
+  }
 
 }
 

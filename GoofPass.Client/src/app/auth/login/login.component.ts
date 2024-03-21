@@ -1,12 +1,11 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {AuthUserDto} from "../../shared/dtos/authuser.dto";
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {AuthService} from "../auth.service";
 import {Router, RouterLink} from "@angular/router";
 import {NgIf} from "@angular/common";
 import {SecurityService} from "../../shared/security.service";
-import {environment} from "../../../environments/environment.development";
-import {of} from "rxjs";
+import {environment} from "../../../environments/environment";
 
 @Component({
   selector: 'app-login',
@@ -33,7 +32,7 @@ export class LoginComponent {
         ]
       ),
       password: new FormControl(
-        '',[
+        '', [
           Validators.required,
           Validators.minLength(8)
         ]
@@ -42,7 +41,7 @@ export class LoginComponent {
   }
 
   login() {
-    if(this.loginForm.valid) {
+    if (this.loginForm.valid) {
       localStorage.clear();
       let userLogin = this.loginForm.value as AuthUserDto;
       // Get salt first (not the best way to do this, but it's a quick fix for now)
@@ -53,7 +52,7 @@ export class LoginComponent {
               userLogin.password = key;
               this.authService.login(userLogin).subscribe({
                 next: (user) => {
-                  if (user && user.token != undefined && user.token.length > 0){
+                  if (user && user.token != undefined && user.token.length > 0) {
                     localStorage.setItem('user', JSON.stringify(user));
                     this.securityService.createKey(userLogin.password, salt, environment.iterPw).then((masterKey) => {
                       localStorage.setItem('key', masterKey);
@@ -75,7 +74,11 @@ export class LoginComponent {
   }
 
 
+  get username() {
+    return this.loginForm.get('username')
+  }
 
-  get username() {return this.loginForm.get('username')}
-  get password() {return this.loginForm.get('password')}
+  get password() {
+    return this.loginForm.get('password')
+  }
 }

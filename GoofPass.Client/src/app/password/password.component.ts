@@ -53,9 +53,9 @@ export class PasswordComponent implements OnInit {
         entry.plain = decrypted;
       })
       .catch((err) => {
-        console.error('Could not decrypt password entry');
-      }
-    );
+          console.error('Could not decrypt password entry');
+        }
+      );
   }
 
   logout() {

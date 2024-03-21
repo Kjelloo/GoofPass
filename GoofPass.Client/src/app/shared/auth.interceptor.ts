@@ -1,9 +1,4 @@
-import {
-  HttpEvent,
-  HttpHandlerFn,
-  HttpInterceptorFn,
-  HttpRequest
-} from '@angular/common/http';
+import {HttpEvent, HttpHandlerFn, HttpInterceptorFn, HttpRequest} from '@angular/common/http';
 import {User} from "./dtos/user.dto";
 import {Observable} from "rxjs";
 

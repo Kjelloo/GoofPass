@@ -73,7 +73,7 @@ export class PasswordCreateComponent implements OnInit {
           passwordEntry.iv = encrypted.iv;
           passwordEntry.salt = encrypted.salt;
 
-          this.passwordService.createPassword(passwordEntry).subscribe(  {
+          this.passwordService.createPassword(passwordEntry).subscribe({
             next: (result) => {
               if (result) {
                 this.passwordCreated.emit(result);

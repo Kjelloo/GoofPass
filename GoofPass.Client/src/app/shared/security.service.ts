@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {AuthUserDto} from "./dtos/authuser.dto";
-import {environment} from "../../environments/environment.development";
 import CryptoJS from 'crypto-js';
 import {RegisterUserDto} from "./dtos/RegisterUserDto";
 import {PasswordEntryDto} from "./dtos/passwordEntryDto";
 import generator from 'generate-password-ts';
+import {environment} from "../../environments/environment";
 
 let keyLength = environment.keyLength;
 let iterations = environment.iterAuth;
@@ -14,12 +14,14 @@ let iterations = environment.iterAuth;
 })
 export class SecurityService {
 
-  constructor() { }
+  constructor() {
+  }
+
   async createUser(authUserDto: AuthUserDto): Promise<RegisterUserDto> {
     let salt = CryptoJS.lib.WordArray.random(16);
 
     let key = CryptoJS.PBKDF2(authUserDto.password, salt,
-      { keySize: keyLength / 32, iterations: iterations});
+      {keySize: keyLength / 32, iterations: iterations});
 
     return {
       email: authUserDto.email,
@@ -31,7 +33,7 @@ export class SecurityService {
   async createKey(password: string, salt: string, iter: number): Promise<string> {
     let slt = CryptoJS.enc.Base64.parse(salt);
     let key = CryptoJS.PBKDF2(password, slt,
-      { keySize: keyLength / 32, iterations: iter});
+      {keySize: keyLength / 32, iterations: iter});
 
     return CryptoJS.enc.Base64.stringify(key);
   }

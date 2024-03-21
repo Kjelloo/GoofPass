@@ -1,18 +1,19 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {AuthUserDto} from "../shared/dtos/authuser.dto";
-import {environment} from "../../environments/environment.development";
 import {User} from "../shared/dtos/user.dto";
-import {BehaviorSubject, Observable, of, tap} from "rxjs";
+import {Observable, of} from "rxjs";
 import {RegisterUserDto} from "../shared/dtos/RegisterUserDto";
 import {UserBareDto} from "../shared/dtos/UserBareDto";
+import {environment} from "../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+  }
 
   login(user: AuthUserDto): Observable<User> {
     return this.http.post<User>(environment.apiUrl + 'User/Login', user);
@@ -31,7 +32,7 @@ export class AuthService {
     return this.http.post(
       environment.apiUrl + 'User/Salt',
       user,
-      { responseType: 'text'});
+      {responseType: 'text'});
   }
 
   authenticated() {

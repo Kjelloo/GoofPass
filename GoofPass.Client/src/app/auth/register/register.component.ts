@@ -9,13 +9,13 @@ import {SecurityService} from "../../shared/security.service";
 @Component({
   selector: 'app-register',
   standalone: true,
-    imports: [
-        FormsModule,
-        NgIf,
-        ReactiveFormsModule,
-        RouterLink,
-        AsyncPipe
-    ],
+  imports: [
+    FormsModule,
+    NgIf,
+    ReactiveFormsModule,
+    RouterLink,
+    AsyncPipe
+  ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
@@ -32,7 +32,7 @@ export class RegisterComponent implements OnInit {
         ]
       ),
       password: new FormControl(
-        '',[
+        '', [
           Validators.required,
           Validators.minLength(8)
         ]
@@ -45,7 +45,7 @@ export class RegisterComponent implements OnInit {
   }
 
   register() {
-    if(this.registerForm.valid) {
+    if (this.registerForm.valid) {
       let userLogin = this.registerForm.value as AuthUserDto;
       localStorage.clear();
 
@@ -64,7 +64,12 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-  get email() {return this.registerForm.get('email')}
-  get password() {return this.registerForm.get('password')}
+  get email() {
+    return this.registerForm.get('email')
+  }
+
+  get password() {
+    return this.registerForm.get('password')
+  }
 
 }
